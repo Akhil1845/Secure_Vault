@@ -15,8 +15,8 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public Optional<User> login(String username, String password) {
-        Optional<User> userOptional = userRepository.findByUsername(username);
+    public Optional<User> login(String identifier, String password) {
+        Optional<User> userOptional = userRepository.findByUsernameOrEmail(identifier, identifier);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             if (user.getPassword().equals(password)) {
@@ -25,4 +25,20 @@ public class UserService {
         }
         return Optional.empty();
     }
+
+    public User registerUser(String username, String email, String password, String role) {
+        if (userRepository.findByUsername(username).isPresent()) {
+            throw new RuntimeException("This username is already taken");
+        }
+        if (email != null && !email.isBlank() && userRepository.findByEmail(email).isPresent()) {
+            throw new RuntimeException("Email already exists");
+        }
+        User newUser = new User();
+        newUser.setUsername(username);
+        newUser.setEmail(email);
+        newUser.setPassword(password); // In a real app we would encode this password!
+        newUser.setRole(role);
+        return userRepository.save(newUser);
+    }
+
 }

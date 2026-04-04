@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organization Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #121212;
+            --surface: rgba(22, 22, 22, 0.86);
+            --border: rgba(242, 194, 84, 0.24);
+            --accent: #e8b04a;
+            --gold: #f2c254;
+            --danger: #ff6a77;
+            --success: #55d18c;
+            --text: #f5efe1;
+            --text-muted: #b8aa8b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 8% 10%, rgba(229, 176, 74, 0.13), transparent 38%),
+                radial-gradient(circle at 90% 85%, rgba(194, 152, 63, 0.12), transparent 35%),
+                var(--bg);
+            color: var(--text);
+            font-family: "DM Mono", monospace;
+            overflow: hidden;
+        }
+
+        .grid {
+            position: fixed;
+            inset: 0;
+            background-image: linear-gradient(rgba(255, 207, 109, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 207, 109, 0.08) 1px, transparent 1px);
+            background-size: 60px 60px;
+            opacity: 0.45;
+            mask-image: radial-gradient(circle at center, black 28%, transparent 75%);
+            pointer-events: none;
+        }
+
+        .corner-glow::before,
+        .corner-glow::after {
+            content: "";
+            position: fixed;
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            filter: blur(12px);
+            pointer-events: none;
+        }
+
+        .corner-glow::before {
+            top: -90px;
+            right: -70px;
+            background: radial-gradient(circle, rgba(247, 193, 82, 0.27), transparent 70%);
+        }
+
+        .corner-glow::after {
+            bottom: -120px;
+            left: -120px;
+            background: radial-gradient(circle, rgba(247, 193, 82, 0.18), transparent 70%);
+        }
+
+        .wrap {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 18px;
+            position: relative;
+            z-index: 1;
+            animation: enter 500ms ease;
+        }
+
+        @keyframes enter {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .panel {
+            width: 100%;
+            max-width: 500px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: 0 26px 60px rgba(0, 0, 0, 0.52);
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 18px 20px 12px;
+            border-bottom: 1px solid rgba(236, 183, 72, 0.22);
+        }
+
+        .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: "Syne", sans-serif;
+            font-size: 24px;
+            letter-spacing: 0.2px;
+        }
+
+        .badge {
+            font-size: 10px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            border: 1px solid rgba(255, 117, 117, 0.5);
+            color: #ff9b9b;
+            border-radius: 999px;
+            padding: 5px 8px;
+        }
+
+        .sub {
+            margin-top: 6px;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .warning-strip {
+            margin: 14px 18px 0;
+            border-radius: 9px;
+            border: 1px solid rgba(255, 171, 97, 0.42);
+            background: rgba(93, 58, 23, 0.36);
+            color: #f4cd8a;
+            padding: 9px 10px;
+            font-size: 12px;
+        }
+
+        .form {
+            padding: 18px;
+        }
+
+        .field {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid rgba(238, 189, 77, 0.34);
+            background: rgba(18, 18, 18, 0.86);
+            color: var(--text);
+            padding: 12px;
+            font-family: "DM Mono", monospace;
+            outline: none;
+            transition: border-color 180ms ease, box-shadow 180ms ease;
+        }
+
+        input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(242, 194, 84, 0.2);
+        }
+
+        .toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-family: "DM Mono", monospace;
+            font-size: 11px;
+        }
+
+        .btn {
+            width: 100%;
+            border: none;
+            border-radius: 11px;
+            padding: 12px;
+            font-family: "Syne", sans-serif;
+            font-weight: 800;
+            background: linear-gradient(135deg, #e3ad4b, #bb8429);
+            color: #1f1708;
+            cursor: pointer;
+            transition: transform 180ms ease, box-shadow 180ms ease;
+            box-shadow: 0 8px 20px rgba(217, 158, 62, 0.35);
+        }
+
+        .btn:hover { transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .error {
+            margin-top: 10px;
+            color: var(--danger);
+            font-size: 12px;
+            min-height: 16px;
+        }
+
+        .attempt {
+            margin-top: 8px;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .toast {
+            position: fixed;
+            top: 18px;
+            right: 18px;
+            border-radius: 10px;
+            padding: 10px 14px;
+            border: 1px solid rgba(236, 183, 72, 0.33);
+            background: rgba(20, 17, 13, 0.96);
+            color: var(--text);
+            transform: translateX(130%);
+            transition: transform 250ms ease;
+            z-index: 2;
+            font-size: 13px;
+        }
+
+        .toast.show { transform: translateX(0); }
+        .toast.error { border-color: rgba(255, 112, 122, 0.5); }
+        .toast.success { border-color: rgba(85, 209, 140, 0.5); }
+    </style>
+</head>
+<body>
+    <div class="grid"></div>
+    <div class="corner-glow"></div>
+
+    <div class="wrap">
+        <div class="panel">
+            <div class="header">
+                <div class="title-row">
+                    <div class="title">🔒 Organization Portal</div>
+                    <div class="badge">Restricted Access</div>
+                </div>
+                <p class="sub">Authorized company managers only</p>
+            </div>
+
+            <div class="warning-strip">Unauthorized access attempts are logged and monitored</div>
+
+            <form class="form" onsubmit="loginAdmin(event)">
+                <div class="field">
+                    <label>Company Email</label>
+                    <div class="input-wrap">
+                        <input id="adminEmail" type="email" placeholder="manager@securevaultcorp.com" required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Password</label>
+                    <div class="input-wrap">
+                        <input id="adminPassword" type="password" placeholder="Enter password" required>
+                        <button class="toggle" type="button" onclick="toggle('adminPassword', this)">SHOW</button>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Secret Company Key</label>
+                    <div class="input-wrap">
+                        <input id="adminSecret" type="password" placeholder="Enter secret key" required>
+                        <button class="toggle" type="button" onclick="toggle('adminSecret', this)">SHOW</button>
+                    </div>
+                </div>
+
+                <button class="btn" id="adminLoginBtn" type="submit">Access Organization Portal</button>
+                <div class="error" id="errorText"></div>
+                <div class="attempt" id="attemptText">Failed attempts: 0</div>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API_BASE = "http://localhost:8083";
+        let failedAttempts = 0;
+        let lockUntil = 0;
+        let countdownHandle;
+
+        function showToast(message, type) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.className = `toast ${type || ""} show`;
+            setTimeout(() => toast.classList.remove("show"), 2500);
+        }
+
+        function setError(message) {
+            document.getElementById("errorText").textContent = message || "";
+        }
+
+        function toggle(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const reveal = input.type === "password";
+            input.type = reveal ? "text" : "password";
+            btn.textContent = reveal ? "HIDE" : "SHOW";
+        }
+
+        function isLocked() {
+            return Date.now() < lockUntil;
+        }
+
+        function updateAttemptText() {
+            const text = document.getElementById("attemptText");
+            text.textContent = `Failed attempts: ${failedAttempts}`;
+        }
+
+        function startLock(seconds) {
+            lockUntil = Date.now() + (seconds * 1000);
+            const btn = document.getElementById("adminLoginBtn");
+            btn.disabled = true;
+
+            clearInterval(countdownHandle);
+            countdownHandle = setInterval(() => {
+                const remaining = Math.max(0, Math.ceil((lockUntil - Date.now()) / 1000));
+                btn.textContent = remaining > 0 ? `Locked (${remaining}s)` : "Access Organization Portal";
+                if (remaining <= 0) {
+                    clearInterval(countdownHandle);
+                    btn.disabled = false;
+                    failedAttempts = 0;
+                    updateAttemptText();
+                    setError("");
+                }
+            }, 250);
+        }
+
+        async function loginAdmin(event) {
+            event.preventDefault();
+
+            if (isLocked()) {
+                setError("Portal is temporarily locked. Please wait.");
+                return;
+            }
+
+            const email = document.getElementById("adminEmail").value.trim();
+            const password = document.getElementById("adminPassword").value.trim();
+            const secretKey = document.getElementById("adminSecret").value.trim();
+
+                if (!email || !password || !secretKey) {
+                    setError("All fields are required");
+                    return;
+                }
+
+                setError("");
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password, secretKey })
+                });
+                const data = await response.json();
+
+                if (!response.ok || data.status !== "success") {
+                    failedAttempts += 1;
+                    updateAttemptText();
+                    setError(data.message || "Access denied");
+                    showToast("Access denied", "error");
+                    if (failedAttempts >= 3) {
+                        startLock(30);
+                    }
+                    return;
+                }
+
+                localStorage.setItem("username", data.username || email);
+                localStorage.setItem("role", "ADMIN");
+                localStorage.setItem("companyName", data.companyName || "Organization");
+                localStorage.setItem("adminId", String(data.adminId));
+                localStorage.removeItem("userId");
+                showToast("Admin access granted", "success");
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 350);
+            } catch (err) {
+                failedAttempts += 1;
+                updateAttemptText();
+                setError("Server unavailable");
+                showToast("Server unavailable", "error");
+                if (failedAttempts >= 3) {
+                    startLock(30);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
