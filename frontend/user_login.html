@@ -6,6 +6,7 @@
 <title>SecureVault — Data Protection System</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="user_login.css">
+<script src="config.js"></script>
 </head>
 <body>
 
@@ -271,7 +272,7 @@
     const btn = document.querySelector('#panel-login .btn-submit');
     btn.classList.add('loading');
 
-    fetch('http://localhost:8083/auth/login', {
+    fetch(API_BASE + '/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({ username: identifier, password: pw })
@@ -324,7 +325,7 @@
       : 'USER';
 
     btn.classList.add('loading');
-    fetch('http://localhost:8083/auth/register', {
+    fetch(API_BASE + '/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({ username, email, password: pw, role })
