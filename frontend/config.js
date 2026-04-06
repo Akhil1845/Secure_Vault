@@ -7,23 +7,15 @@
 // Your backend URL - Update this when deploying to production
 // For Vercel: Set via Environment Variables in Vercel Dashboard
 const API_BASE = (() => {
-    // Check for environment variable (works with Vercel env vars)
-    if (typeof window !== 'undefined') {
-        // In Vercel, you need to inject this via a script tag or use build-time replacement
-        // For now, use this logic:
-        
-        const hostname = window.location.hostname;
-        
-        // Local development
-        if (hostname === 'localhost' || hostname === '127.0.0.1') {
-            return 'http://localhost:8083';
-        }
-        
-        // Production - ngrok tunnel for remote access
-        return 'https://interdental-farcically-bernardina.ngrok-free.dev';
+    const hostname = window.location.hostname;
+    
+    // Local development
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:8083';
     }
     
-    return 'http://localhost:8083';
+    // Production/Remote - ngrok tunnel for remote access
+    return 'https://interdental-farcically-bernardina.ngrok-free.dev';
 })();
 
 // Make API_BASE available globally
